@@ -1,0 +1,41 @@
+{
+  "version": "2.0",
+  "routeKey": "POST /webhooks",
+  "rawPath": "/webhooks",
+  "rawQueryString": "",
+  "headers": {
+    "accept": "*/*",
+    "accept-encoding": "deflate, gzip",
+    "content-length": "339",
+    "content-type": "application/json",
+    "facebook-api-version": "v21.0",
+    "host": "2pabwb591j.execute-api.ap-southeast-1.amazonaws.com",
+    "user-agent": "facebookexternalua",
+    "x-amzn-trace-id": "Root=1-675470c4-79f13a8c649d91372e353927",
+    "x-forwarded-for": "173.252.95.5",
+    "x-forwarded-port": "443",
+    "x-forwarded-proto": "https",
+    "x-hub-signature": "sha1=493c29796d9a135ed33f0c7d48180cc69d26b578",
+    "x-hub-signature-256": "sha256=da38bcfbf756fba6290d1477e2b62ad394fff6a5f051304486329cbe11a29c85"
+  },
+  "requestContext": {
+    "accountId": "239995296586",
+    "apiId": "2pabwb591j",
+    "domainName": "2pabwb591j.execute-api.ap-southeast-1.amazonaws.com",
+    "domainPrefix": "2pabwb591j",
+    "http": {
+      "method": "POST",
+      "path": "/webhooks",
+      "protocol": "HTTP/1.1",
+      "sourceIp": "173.252.95.5",
+      "userAgent": "facebookexternalua"
+    },
+    "requestId": "CbaOtjt0yQ0EJdg=",
+    "routeKey": "POST /webhooks",
+    "stage": "$default",
+    "time": "07/Dec/2024:15:59:00 +0000",
+    "timeEpoch": 1733587140187
+  },
+  "body": "{\"object\":\"page\",\"entry\":[{\"time\":1733587139602,\"id\":\"222579127613583\",\"messaging\":[{\"sender\":{\"id\":\"7139871802735203\"},\"recipient\":{\"id\":\"222579127613583\"},\"timestamp\":1733586357236,\"message\":{\"mid\":\"m_fdlGhzynzeSsMo6Cf5jUd4eL6_6jFMTloSKMODarhte54NQLBj5RZWwGfr504YtS9txCd-Ba8TqpXB9-1T5vBw\",\"text\":\"mua \\u00e1o coolmate 3 tri\\u1ec7u\"}}]}]}",
+  "isBase64Encoded": "False"
+}

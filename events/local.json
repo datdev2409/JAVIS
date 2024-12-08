@@ -1,0 +1,5 @@
+{
+  "JavisMessengerHandler": {
+      "DYNAMODB_TABLE": "javis-memory"
+  }
+}

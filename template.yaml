@@ -1,0 +1,101 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  javis
+
+  Sample SAM Template for javis
+
+Parameters:
+  GeminiApiKeyParam:
+    Description: Gemini API Key
+    Type: String
+  FBMessengerAccessTokenParam:
+    Description: Use this token to access the Facebook Messenger API
+    Type: String
+  FBMessengerVerifyTokenParam:
+    Description: Use this token to setup the Facebook Messenger Webhook
+    Type: String
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+    MemorySize: 128
+
+Resources:
+  JavisUI:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: javis-ui
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+      VersioningConfiguration:
+        Status: Enabled
+  JavisMemory:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: javis-memory
+      TableClass: STANDARD
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: PartitionKey
+          AttributeType: S
+        - AttributeName: SortKey
+          AttributeType: S
+      KeySchema:
+        - AttributeName: PartitionKey
+          KeyType: HASH
+        - AttributeName: SortKey
+          KeyType: RANGE
+  JavisMessengerHandler:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: message_handler/
+      Handler: main.lambda_handler
+      Runtime: python3.11
+      Timeout: 120
+      Architectures:
+        - arm64
+      Environment:
+        Variables:
+          DYNAMODB_TABLE: !Ref JavisMemory
+          GEMINI_API_KEY: !Ref GeminiApiKeyParam
+          FB_MESSENGER_ACCESS_TOKEN: !Ref FBMessengerAccessTokenParam
+          FB_MESSENGER_VERIFY_TOKEN: !Ref FBMessengerVerifyTokenParam
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref JavisMemory
+      Events:
+        WebhookVerification:
+          Type: HttpApi
+          Properties:
+            Path: /webhooks
+            Method: get
+        WebhookEventReceived:
+          Type: HttpApi
+          Properties:
+            Path: /webhooks
+            Method: post
+
+# More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+# More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  HelloWorldFunction:
+    Description: "Lambda Function ARN"
+    Value: !GetAtt JavisMessengerHandler.Arn
+  HelloWorldFunctionIamRole:
+    Description: "Implicit IAM Role created for Hello World function"
+    Value: !GetAtt JavisMessengerHandlerRole.Arn
+  JavisWebsite:
+    Description: "Amazon S3 website endpoint"
+    Value: !GetAtt JavisUI.WebsiteURL
