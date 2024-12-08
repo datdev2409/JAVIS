@@ -5,6 +5,7 @@ import urllib3
 from urllib.parse import urlencode
 import google.generativeai as genai
 from dynamodb import db_create_transactions
+from utils import create_response
 from prompts import system_prompts
 
 
@@ -59,9 +60,9 @@ def lambda_handler(event, context):
             token = query_string.get("hub.verify_token", "")
 
             if token == os.environ.get("FB_MESSENGER_VERIFY_TOKEN"):
-                return {"statusCode": 200, "body": challenge}
+                return create_response(200, challenge)
             else:
-                return {"statusCode": 403, "body": "Invalid Token"}
+                return create_response(403, "Invalid Token")
 
     # Handle Webhook Event Notification
     if request_path == "/webhooks" and request_method == "POST":
@@ -74,15 +75,15 @@ def lambda_handler(event, context):
 
         send_message(sender_id, response)
 
-        return {"statusCode": 200, "body": "Received Message: " + message}
+        return create_response(200, "Received Message: " + message)
 
     if request_path == "/messages" and request_method == "POST":
         body = json.loads(event.get("body", "{}").replace("'", '"'))
         message = body.get("message", "Send attachment")
         response = handle_record_transaction_request(message)
-        return {"statusCode": 200, "body": response}
+        return create_response(200, response)
 
-    return {"statusCode": 200, "body": json.dumps("Hello from Lambda!")}
+    return create_response(200, "Hello from Lambda!")
 
 
 def handle_record_transaction_request(message):
