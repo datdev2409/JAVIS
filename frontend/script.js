@@ -15,7 +15,7 @@ async function sendMessage() {
   })
   const botMessage = document.createElement('div');
   botMessage.classList.add('bot-message');
-  botMessage.textContent = `Bot: ${await botResponse.json()}`;
+  botMessage.textContent = `Bot: ${await botResponse.text()}`;
   chatMessages.appendChild(botMessage);
 
   document.getElementById('user-input').value = '';
