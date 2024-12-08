@@ -72,6 +72,11 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref JavisMemory
       Events:
+        MessageReceived:
+          Type: HttpApi
+          Properties:
+            Path: /messages
+            Method: post
         WebhookVerification:
           Type: HttpApi
           Properties:

@@ -66,27 +66,30 @@ def lambda_handler(event, context):
     # Handle Webhook Event Notification
     if request_path == "/webhooks" and request_method == "POST":
         body = json.loads(event.get("body", "{}").replace("'", '"'))
-
         message = body.get("entry")[0]["messaging"][0]["message"].get(
             "text", "Send attachment"
         )
         sender_id = body.get("entry")[0]["messaging"][0]["sender"].get("id")
-
-        model_output = get_model_response(message)
-        print(model_output)
-
-        transactions = json.loads(model_output.candidates[0].content.parts[0].text).get(
-            "transactions"
-        )
-        print(transactions)
-        db_create_transactions(transactions)
-
-        response = json.loads(model_output.text).get(
-            "message", "Something went wrong!!"
-        )
+        response = handle_record_transaction_request(message)
 
         send_message(sender_id, response)
 
         return {"statusCode": 200, "body": "Received Message: " + message}
 
+    if request_path == "/messages" and request_method == "POST":
+        body = json.loads(event.get("body", "{}").replace("'", '"'))
+        message = body.get("message", "Send attachment")
+        response = handle_record_transaction_request(message)
+        return {"statusCode": 200, "body": response}
+
     return {"statusCode": 200, "body": json.dumps("Hello from Lambda!")}
+
+
+def handle_record_transaction_request(message):
+    model_output = get_model_response(message)
+    transactions = json.loads(model_output.candidates[0].content.parts[0].text).get(
+        "transactions"
+    )
+    db_create_transactions(transactions)
+    response = json.loads(model_output.text).get("message", "Something went wrong!!")
+    return response
